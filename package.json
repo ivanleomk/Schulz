@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db-codegen": "kysely-codegen --out-file ./src/types/database.ts",
+    "generate-env": "echo 'DATABASE_URL=postgres[databasePassword]://user:password@host:port/database_name' > .env"
   },
   "dependencies": {
     "@types/node": "18.15.11",
@@ -15,7 +17,10 @@
     "autoprefixer": "10.4.14",
     "eslint": "8.38.0",
     "eslint-config-next": "13.3.0",
+    "kysely": "^0.24.2",
+    "kysely-codegen": "^0.10.0",
     "next": "13.3.0",
+    "pg": "^8.10.0",
     "postcss": "8.4.21",
     "react": "18.2.0",
     "react-dom": "18.2.0",
