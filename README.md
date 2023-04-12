@@ -61,7 +61,7 @@ service_role key: <serviceRoleKey>
 
 ## Database Migrations
 
-> This guide teaches you how to test your proposed changes against a local docker instance.
+> This guide teaches you how to test your proposed changes against a local docker instance. For more detailed instructions/troubleshooting, please go to the [official supabase documentation](https://supabase.com/docs/guides/cli/managing-environments#release-to-production)
 
 Supabase provides an easy mechanism for us to perform any sort of migration.
 
@@ -88,3 +88,5 @@ supabase migration new <migrationName>
 ```
 supabase db diff -f <migrationName>
 ```
+
+Once you've verified that it works locally, our CI will automatically deploy any new changes to production

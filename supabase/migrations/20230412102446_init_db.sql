@@ -1,15 +1,42 @@
-CREATE TYPE "customer_type" AS ENUM (
-  'customer',
-  'prospect'
-);
+CREATE OR REPLACE FUNCTION create_customer_type()
+RETURNS VOID AS $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'customer_type') THEN
+    CREATE TYPE "customer_type" AS ENUM (
+      'customer',
+      'prospect'
+    );
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
 
-CREATE TYPE "prospect_status" AS ENUM (
-  'Awareness',
-  'Consideration',
-  'Preference',
-  'Purchase',
-  'Loyalty'
-);
+SELECT create_customer_type();
+
+CREATE OR REPLACE FUNCTION create_prospect_status()
+RETURNS VOID AS $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'prospect_status') THEN
+    CREATE TYPE "prospect_status" AS ENUM (
+      'Awareness',
+      'Consideration',
+      'Preference',
+      'Purchase',
+      'Loyalty'
+    );
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT create_prospect_status();
+
+DROP TABLE IF EXISTS "customer_permission";
+DROP TABLE IF EXISTS "company_note";
+DROP TABLE IF EXISTS "user_note";
+DROP TABLE IF EXISTS "user";
+DROP TABLE IF EXISTS "company";
+DROP TABLE IF EXISTS "customer_interaction";
+DROP TABLE IF EXISTS "customer_email";
+DROP TABLE IF EXISTS "customer";
 
 CREATE TABLE "customer_permission" (
   "user_id" uuid NOT NULL,
