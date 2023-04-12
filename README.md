@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Setup Instructions
 
-## Getting Started
+> Requirements
+>
+> - Supabase CLI
+> - Docker
+> - Yarn/NPM
 
-First, run the development server:
+> For this specific project, you'll be doing local development work with a local instance of supabase. This will help you to develop faster and iterate better.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+1. Install all the packages. We're using yarn so make sure not to use `npm`
+
+```
+yarn install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Generate an .env.example file which will have all the necessary environment variables populated within it. Once you've populated it with the right variables, change it to `.env `
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+yarn run generate-env
+```
 
-[http://localhost:3000/api/hello](http://localhost:3000/api/hello) is an endpoint that uses [Route Handlers](https://beta.nextjs.org/docs/routing/route-handlers). This endpoint can be edited in `app/api/hello/route.ts`.
+3. Make sure that your database types are accurate. To do so, you'll need a `DATABASE_URL` environment variable to be able to allow keysely to connect and introspect the prod db.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```
+yarn run db-codegen
+```
 
-## Learn More
+4. Login to supabase. You'll need to generate an access token for your local supabase instance. You can do so by going to [supabase's dashboard](https://app.supabase.com/account/tokens).
 
-To learn more about Next.js, take a look at the following resources:
+```
+supabase login
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+5. Now you want to start a local development instance of supabase. You can do by running the command with
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+```
+supabase start
+```
 
-## Deploy on Vercel
+This will in turn result in the following output
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+  schulz git:(main) ✗ supabase start
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+Applying migration 20230412102446_init_db.sql...
+Seeding data supabase/seed.sql...
+Started supabase local development setup.
+
+         API URL: http://localhost:54321
+          DB URL: postgresql://postgres:postgres@localhost:54322/postgres
+      Studio URL: http://localhost:54323
+    Inbucket URL: http://localhost:54324
+      JWT secret: super-secret-jwt-token-with-at-least-32-characters-long
+        anon key: <anonKey>
+service_role key: <serviceRoleKey>
+```
+
+# Guides
+
+## Database Migrations
+
+> This guide teaches you how to test your proposed changes against a local docker instance.
+
+Supabase provides an easy mechanism for us to perform any sort of migration.
+
+1. First, ensure all migrations have been performed against your local docker isntance
+
+```bash
+schulz git:(main) ✗ supabase db reset
+
+Resetting database...
+Initialising schema...
+Applying migration 20230412102446_init_db.sql...
+Seeding data supabase/seed.sql...
+Finished supabase db reset on branch main.
+```
+
+2. Create a new migraiton
+
+```
+supabase migration new <migrationName>
+```
+
+3. Generate a diff of the new proposed changes
+
+```
+supabase db diff -f <migrationName>
+```
