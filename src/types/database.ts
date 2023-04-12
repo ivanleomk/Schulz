@@ -2,8 +2,6 @@ import type { ColumnType } from "kysely";
 
 export type AuthAalLevel = "aal1" | "aal2" | "aal3";
 
-export type AuthCodeChallengeMethod = "plain" | "s256";
-
 export type AuthFactorStatus = "unverified" | "verified";
 
 export type AuthFactorType = "totp" | "webauthn";
@@ -38,25 +36,38 @@ export type ProspectStatus = "Awareness" | "Consideration" | "Loyalty" | "Prefer
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
+export interface _RealtimeExtensions {
+  id: string;
+  type: string | null;
+  settings: Json | null;
+  tenant_external_id: string | null;
+  inserted_at: Timestamp;
+  updated_at: Timestamp;
+}
+
+export interface _RealtimeSchemaMigrations {
+  version: Int8;
+  inserted_at: Timestamp | null;
+}
+
+export interface _RealtimeTenants {
+  id: string;
+  name: string | null;
+  external_id: string | null;
+  jwt_secret: string | null;
+  max_concurrent_users: Generated<number>;
+  inserted_at: Timestamp;
+  updated_at: Timestamp;
+  max_events_per_second: Generated<number>;
+  postgres_cdc_default: Generated<string | null>;
+}
+
 export interface AuthAuditLogEntries {
   instance_id: string | null;
   id: string;
   payload: Json | null;
   created_at: Timestamp | null;
   ip_address: Generated<string>;
-}
-
-export interface AuthFlowState {
-  id: string;
-  user_id: string | null;
-  auth_code: string;
-  code_challenge_method: AuthCodeChallengeMethod;
-  code_challenge: string;
-  provider_type: string;
-  provider_access_token: string | null;
-  provider_refresh_token: string | null;
-  created_at: Timestamp | null;
-  updated_at: Timestamp | null;
 }
 
 export interface AuthIdentities {
@@ -202,7 +213,6 @@ export interface AuthUsers {
   reauthentication_token: Generated<string | null>;
   reauthentication_sent_at: Timestamp | null;
   is_sso_user: Generated<boolean>;
-  deleted_at: Timestamp | null;
 }
 
 export interface Company {
@@ -225,12 +235,6 @@ export interface Customer {
   type: Generated<CustomerType>;
   phone_number: number | null;
   customer_email: string | null;
-}
-
-export interface CustomerDeal {
-  deal_id: Generated<string>;
-  customer_id: string | null;
-  deal_value: string | null;
 }
 
 export interface CustomerEmail {
@@ -385,9 +389,6 @@ export interface StorageBuckets {
   created_at: Generated<Timestamp | null>;
   updated_at: Generated<Timestamp | null>;
   public: Generated<boolean | null>;
-  avif_autodetection: Generated<boolean | null>;
-  file_size_limit: Int8 | null;
-  allowed_mime_types: string[] | null;
 }
 
 export interface StorageMigrations {
@@ -407,7 +408,6 @@ export interface StorageObjects {
   last_accessed_at: Generated<Timestamp | null>;
   metadata: Json | null;
   path_tokens: Generated<string[] | null>;
-  version: string | null;
 }
 
 export interface User {
@@ -427,32 +427,11 @@ export interface UserNote {
   user_id: string;
 }
 
-export interface VaultDecryptedSecrets {
-  id: string | null;
-  name: string | null;
-  description: string | null;
-  secret: string | null;
-  decrypted_secret: string | null;
-  key_id: string | null;
-  nonce: Buffer | null;
-  created_at: Timestamp | null;
-  updated_at: Timestamp | null;
-}
-
-export interface VaultSecrets {
-  id: Generated<string>;
-  name: string | null;
-  description: Generated<string>;
-  secret: string;
-  key_id: Generated<string | null>;
-  nonce: Generated<Buffer | null>;
-  created_at: Generated<Timestamp>;
-  updated_at: Generated<Timestamp>;
-}
-
 export interface DB {
+  "_realtime.extensions": _RealtimeExtensions;
+  "_realtime.schema_migrations": _RealtimeSchemaMigrations;
+  "_realtime.tenants": _RealtimeTenants;
   "auth.audit_log_entries": AuthAuditLogEntries;
-  "auth.flow_state": AuthFlowState;
   "auth.identities": AuthIdentities;
   "auth.instances": AuthInstances;
   "auth.mfa_amr_claims": AuthMfaAmrClaims;
@@ -469,7 +448,6 @@ export interface DB {
   company: Company;
   company_note: CompanyNote;
   customer: Customer;
-  customer_deal: CustomerDeal;
   customer_email: CustomerEmail;
   customer_interaction: CustomerInteraction;
   customer_permission: CustomerPermission;
@@ -485,6 +463,4 @@ export interface DB {
   "storage.objects": StorageObjects;
   user: User;
   user_note: UserNote;
-  "vault.decrypted_secrets": VaultDecryptedSecrets;
-  "vault.secrets": VaultSecrets;
 }
