@@ -1,12 +1,16 @@
 # Setup Instructions
 
+- [Setup Instructions](#setup-instructions)
+- [Guides](#guides)
+  - [Database Migrations](#database-migrations)
+
 > Requirements
 >
 > - Supabase CLI
 > - Docker
 > - Yarn/NPM
 
-> For this specific project, you'll be doing local development work with a local instance of supabase. This will help you to develop faster and iterate better.
+For this specific project, you'll be doing local development work with a local instance of supabase. This will help you to develop faster and iterate better.
 
 1. Install all the packages. We're using yarn so make sure not to use `npm`
 
@@ -89,4 +93,39 @@ supabase migration new <migrationName>
 supabase db diff -f <migrationName>
 ```
 
-Once you've verified that it works locally, our CI will automatically deploy any new changes to production
+This should in turn generate the following output
+
+```bash
+schulz git:(AddingCustomerDealColumn) ✗ supabase db diff -f <migrationName>
+
+Connecting to local database...
+Creating shadow database...
+Applying migration 20230412102446_init_db.sql...
+Applying migration 20230412150352_<migrationName>.sql...
+Diffing schemas: auth,extensions,public,storage
+Finished supabase db diff on branch main.
+
+WARNING: The diff tool is not foolproof, so you may need to manually rearrange and modify the generated migration.
+Run supabase db reset to verify that the new migration does not generate errors.
+```
+
+4. Run all migrations up to that point
+
+```
+supabase db reset
+```
+
+This should in turn give you an output which looks like
+
+```
+chulz git:(AddingCustomerDealColumn) ✗ supabase db reset
+Resetting database...
+Initialising schema...
+Applying migration 20230412102446_init_db.sql...
+Applying migration 20230412150352_addNewCustomerDeal.sql...
+Applying migration 20230412150426_addNewCustomerDeal.sql...
+Seeding data supabase/seed.sql...
+Finished supabase db reset on branch main.
+```
+
+Once you've verified that this command works, push to prod and our CI will take care of the rest.
