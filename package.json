@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db-codegen": "kysely-codegen --out-file ./src/types/database.ts",
+    "db-codegen": "kysely-codegen --out-file ./src/types/database.ts --url postgresql://postgres:postgres@localhost:54322/postgres  --dialect postgres",
     "gh-action-codegen": "kysely-codegen --out-file ./src/types/database.ts --url postgresql://postgres:postgres@localhost:54322/postgres  --dialect postgres",
     "generate-env": "echo 'DATABASE_URL=postgres[databasePassword]://user:password@host:port/database_name' > .env.example"
   },
