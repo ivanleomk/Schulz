@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "db-codegen": "kysely-codegen --out-file ./src/types/database.ts",
+    "gh-action-codegen": "kysely-codegen --out-file ./src/types/database.ts --url postgresql://postgres:postgres@localhost:54322/postgres",
     "generate-env": "echo 'DATABASE_URL=postgres[databasePassword]://user:password@host:port/database_name' > .env.example"
   },
   "dependencies": {
