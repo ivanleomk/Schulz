@@ -12,6 +12,7 @@
     "generate-env": "echo 'DATABASE_URL=postgres[databasePassword]://user:password@host:port/database_name' > .env.example"
   },
   "dependencies": {
+    "@radix-ui/react-label": "^2.0.1",
     "@supabase/auth-helpers-nextjs": "^0.6.1",
     "@supabase/supabase-js": "^2.21.0",
     "@types/node": "18.15.11",

@@ -237,6 +237,12 @@ export interface Customer {
   customer_email: string | null;
 }
 
+export interface CustomerDeal {
+  deal_id: Generated<string>;
+  customer_id: string | null;
+  deal_value: string | null;
+}
+
 export interface CustomerEmail {
   email_id: Generated<string>;
   customer_id: string;
@@ -427,6 +433,11 @@ export interface UserNote {
   user_id: string;
 }
 
+export interface Waitlist {
+  email: string;
+  created_at: Generated<Timestamp | null>;
+}
+
 export interface DB {
   "_realtime.extensions": _RealtimeExtensions;
   "_realtime.schema_migrations": _RealtimeSchemaMigrations;
@@ -448,6 +459,7 @@ export interface DB {
   company: Company;
   company_note: CompanyNote;
   customer: Customer;
+  customer_deal: CustomerDeal;
   customer_email: CustomerEmail;
   customer_interaction: CustomerInteraction;
   customer_permission: CustomerPermission;
@@ -463,4 +475,5 @@ export interface DB {
   "storage.objects": StorageObjects;
   user: User;
   user_note: UserNote;
+  waitlist: Waitlist;
 }
