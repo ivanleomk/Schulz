@@ -10,7 +10,7 @@ export async function middleware(req: NextRequest) {
 
   const supabase = createMiddlewareSupabaseClient<DB>({ req, res });
   const session = await supabase.auth.getSession();
-  console.log("---session", session);
+
   if (!session.data.session) {
     const url = req.nextUrl.clone();
     const baseUrl = url.origin;
