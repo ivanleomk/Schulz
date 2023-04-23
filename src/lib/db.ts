@@ -1,7 +1,6 @@
 import { Pool } from "pg";
-
 import { Kysely, PostgresDialect } from "kysely";
-import { DB } from "kysely-codegen";
+import { DB } from "@/types/database";
 
 export const db = new Kysely<DB>({
   // PostgresDialect requires the Cursor dependency
