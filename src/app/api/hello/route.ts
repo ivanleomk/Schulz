@@ -1,3 +1,5 @@
+import { db } from "@/lib/db";
 export async function GET(request: Request) {
-  return new Response('Hello, Next.js!')
+  const query = await db.query("SELECT * FROM waitlist");
+  return new Response("Hello, Next.js!");
 }
