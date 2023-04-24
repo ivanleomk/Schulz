@@ -1,81 +1,81 @@
 CREATE TYPE "customer_type" AS ENUM (
-  'customer',
-  'prospect'
+'customer',
+'prospect'
 );
 
 CREATE TYPE "prospect_status" AS ENUM (
-  'Awareness',
-  'Consideration',
-  'Preference',
-  'Purchase',
-  'Loyalty'
+'Awareness',
+'Consideration',
+'Preference',
+'Purchase',
+'Loyalty'
 );
 
 CREATE TABLE "customer_permission" (
-  "user_id" uuid NOT NULL DEFAULT (uuid_generate_v4()),
-  "customer_id" uuid NOT NULL,
-  "company_id" uuid NOT NULL,
-  PRIMARY KEY ("user_id", "customer_id", "company_id")
+"user_id" uuid NOT NULL DEFAULT (uuid_generate_v4()),
+"customer_id" uuid NOT NULL,
+"company_id" uuid NOT NULL,
+PRIMARY KEY ("user_id", "customer_id", "company_id")
 );
 
 CREATE TABLE "company_note" (
-  "note_id" uuid PRIMARY KEY NOT NULL DEFAULT (uuid_generate_v4()),
-  "note_title" text NOT NULL DEFAULT '',
-  "note_content" text NOT NULL DEFAULT '',
-  "company_id" uuid NOT NULL,
-  "customer_id" uuid DEFAULT null
+"note_id" uuid PRIMARY KEY NOT NULL DEFAULT (uuid_generate_v4()),
+"note_title" text NOT NULL DEFAULT '',
+"note_content" text NOT NULL DEFAULT '',
+"company_id" uuid NOT NULL,
+"customer_id" uuid DEFAULT null
 );
 
 CREATE TABLE "user_note" (
-  "note_id" uuid PRIMARY KEY NOT NULL DEFAULT (uuid_generate_v4()),
-  "note_title" text NOT NULL DEFAULT '',
-  "note_content" text NOT NULL DEFAULT '',
-  "user_id" uuid NOT NULL
+"note_id" uuid PRIMARY KEY NOT NULL DEFAULT (uuid_generate_v4()),
+"note_title" text NOT NULL DEFAULT '',
+"note_content" text NOT NULL DEFAULT '',
+"user_id" uuid NOT NULL
 );
 
 CREATE TABLE "user" (
-  "user_id" uuid PRIMARY KEY NOT NULL DEFAULT (uuid_generate_v4()),
-  "username" text UNIQUE NOT NULL,
-  "email" text UNIQUE NOT NULL,
-  "created_at" timestamp NOT NULL DEFAULT (now()),
-  "is_system_admin" bool NOT NULL DEFAULT false,
-  "is_company_admin" bool NOT NULL DEFAULT false,
-  "company_id" uuid DEFAULT null
+"user_id" uuid PRIMARY KEY NOT NULL DEFAULT (uuid_generate_v4()),
+"username" text UNIQUE NOT NULL,
+"email" text UNIQUE NOT NULL,
+"created_at" timestamp NOT NULL DEFAULT (now()),
+"is_system_admin" bool NOT NULL DEFAULT false,
+"is_company_admin" bool NOT NULL DEFAULT false,
+"company_id" uuid DEFAULT null
 );
 
 CREATE TABLE "company" (
-  "company_id" uuid PRIMARY KEY,
-  "company_name" text DEFAULT null
+"company_id" uuid PRIMARY KEY,
+"company_name" text DEFAULT null
 );
 
 CREATE TABLE "customer_interaction" (
-  "meeting_id" uuid PRIMARY KEY,
-  "customer_id" uuid NOT NULL,
-  "meeting_notes" text DEFAULT null,
-  "date" timestamp NOT NULL DEFAULT (now()),
-  "transcript" text
+"meeting_id" uuid PRIMARY KEY,
+"customer_id" uuid NOT NULL,
+"meeting_notes" text DEFAULT null,
+"date" timestamp NOT NULL DEFAULT (now()),
+"transcript" text
 );
 
 CREATE TABLE "customer_email" (
-  "customer_id" uuid NOT NULL DEFAULT (uuid_generate_v4()),
-  "email_text" text NOT NULL DEFAULT '',
-  "email_header" text NOT NULL DEFAULT '',
-  "date" timestamp NOT NULL DEFAULT (now())
+"customer_id" uuid NOT NULL DEFAULT (uuid_generate_v4()),
+"email_text" text NOT NULL DEFAULT '',
+"email_header" text NOT NULL DEFAULT '',
+"date" timestamp NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "customer" (
-  "company_id" uuid NOT NULL,
-  "customer_id" uuid PRIMARY KEY,
-  "status" prospect_status,
-  "type" customer_type,
-  "phone_number" integer,
-  "customer_email" text
+"company_id" uuid NOT NULL,
+"customer_id" uuid PRIMARY KEY,
+"status" prospect_status,
+"type" customer_type,
+"phone_number" integer,
+"customer_email" text
 );
 
 CREATE TABLE "customer_deal" (
-  "deal_id" uuid PRIMARY KEY,
-  "customer_id" uuid,
-  "deal_value" text
+"deal_id" uuid PRIMARY KEY,
+"customer_id" uuid,
+"deal_value" text
 );
 
 COMMENT ON TABLE "customer_permission" IS 'This is used to keep track of which customers an employee can see';

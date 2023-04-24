@@ -2,7 +2,7 @@
 
 - [Setup Instructions](#setup-instructions)
 - [Guides](#guides)
-  - [Database Migrations](#database-migrations)
+  - [Planetscale Database Migration](#planetscale-database-migration)
 
 > Requirements
 >
@@ -63,69 +63,30 @@ service_role key: <serviceRoleKey>
 
 # Guides
 
-## Database Migrations
+## Planetscale Database Migration
 
-> This guide teaches you how to test your proposed changes against a local docker instance. For more detailed instructions/troubleshooting, please go to the [official supabase documentation](https://supabase.com/docs/guides/cli/managing-environments#release-to-production)
+We are experimenting with planetscale for now. Here is a guide as to how to work with planetscale.
 
-Supabase provides an easy mechanism for us to perform any sort of migration.
-
-1. First, ensure all migrations have been performed against your local docker isntance
-
-```bash
-schulz git:(main) ✗ supabase db reset
-
-Resetting database...
-Initialising schema...
-Applying migration 20230412102446_init_db.sql...
-Seeding data supabase/seed.sql...
-Finished supabase db reset on branch main.
-```
-
-2. Create a new migraiton
+1. Create a new branch
 
 ```
-supabase migration new <migrationName>
+pscale branch create schulz <newBranch>
 ```
 
-3. Generate a diff of the new proposed changes
+2. Connect to the new branch
 
 ```
-supabase db diff -f <migrationName>
+pscale connect schulz <newBranch> --port 3309
 ```
 
-This should in turn generate the following output
-
-```bash
-schulz git:(AddingCustomerDealColumn) ✗ supabase db diff -f <migrationName>
-
-Connecting to local database...
-Creating shadow database...
-Applying migration 20230412102446_init_db.sql...
-Applying migration 20230412150352_<migrationName>.sql...
-Diffing schemas: auth,extensions,public,storage
-Finished supabase db diff on branch main.
-
-WARNING: The diff tool is not foolproof, so you may need to manually rearrange and modify the generated migration.
-Run supabase db reset to verify that the new migration does not generate errors.
-```
-
-4. Run all migrations up to that point
+3. Update `prisma.schema` and then push to new branch. Make sure to set the database url to `mysql://root@127.0.0.1:3309/schulz` so that you connect to the schula instance you're tunelling to locally
 
 ```
-supabase db reset
+npx prisma db push
 ```
 
-This should in turn give you an output which looks like
+4. Create a deploy request
 
 ```
-chulz git:(AddingCustomerDealColumn) ✗ supabase db reset
-Resetting database...
-Initialising schema...
-Applying migration 20230412102446_init_db.sql...
-Applying migration 20230412150352_addNewCustomerDeal.sql...
-Applying migration 20230412150426_addNewCustomerDeal.sql...
-Seeding data supabase/seed.sql...
-Finished supabase db reset on branch main.
+pscale deploy-request create schulz <newBranchName>
 ```
-
-Once you've verified that this command works, push to prod and our CI will take care of the rest.

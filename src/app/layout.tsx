@@ -1,6 +1,12 @@
-import Header from "../../components/Header";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs/app-beta";
+import { Toaster } from "../../components/ui/toaster";
+
+const inter = Inter({
+  weight: "400",
+  subsets: ["latin"],
+});
 
 export const metadata = {
   title: "Schulz.Ai",
@@ -15,26 +21,11 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body>
-          <Header />
-          {children}
+        <body className={inter.className}>
+          <Toaster />
+          <div>{children}</div>
         </body>
       </html>
     </ClerkProvider>
   );
-}
-
-{
-  /* <body className="min-h-screen bg-background font-sans ">
-          <div className="relative flex min-h-screen flex-col">
-            <Header />
-            <div className="flex-1">{children}</div>
-          </div>
-        </body> */
-}
-
-{
-  /* <body className="relative flex min-h-screen flex-col">
-          <div className="flex-1">{children}</div>
-        </body> */
 }
