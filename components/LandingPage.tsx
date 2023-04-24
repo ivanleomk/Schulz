@@ -5,8 +5,8 @@ import Link from "next/link";
 
 const LandingPage = () => {
   return (
-    <div className="relative isolate px-6 pt-14 lg:px-8">
-      <div className="mx-auto max-w-2xl py-40 sm:py-48 lg:py-20">
+    <div className="flex  flex-col items-center justify-center h-screen">
+      <div className="mx-auto max-w-2xl ">
         <div className="hidden sm:mb-8 sm:flex sm:justify-center">
           <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
             Announcing our new beta.{" "}
@@ -16,7 +16,7 @@ const LandingPage = () => {
             </Link>
           </div>
         </div>
-        <div className="text-center">
+        <div className="text-center px-4">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
             A New CRM for the digital age.
           </h1>
