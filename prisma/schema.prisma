@@ -58,3 +58,11 @@ model collateral {
   url           String @db.VarChar(1000)
   summary       String @db.VarChar(1000)
 }
+
+model Waitlist {
+  // At most 1000 chars
+  email    String   @id @unique @db.VarChar(200)
+  goal     String   @default("Sales")
+  name     String   @db.VarChar(1000)
+  createAt DateTime @default(now())
+}

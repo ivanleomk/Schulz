@@ -56,6 +56,13 @@ export interface User {
   credits: Generated<number>;
 }
 
+export interface Waitlist {
+  email: string;
+  goal: Generated<string>;
+  name: string;
+  createAt: Generated<Date>;
+}
+
 export interface DB {
   collateral: Collateral;
   Company: Company;
@@ -65,4 +72,5 @@ export interface DB {
   Meeting: Meeting;
   Note: Note;
   User: User;
+  Waitlist: Waitlist;
 }
