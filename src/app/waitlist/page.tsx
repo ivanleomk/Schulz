@@ -4,8 +4,8 @@ import Link from "next/link";
 
 const WaitlistPage = () => {
   return (
-    <div className=" max-w-2xl h-screen flex items-center justify-center ">
-      <div className="px-4">
+    <div className="  h-screen flex items-center justify-center ">
+      <div className="max-w-2xl px-4">
         <Link href="/" className="flex items-center cursor-pointer">
           <ArrowLeftIcon />
           <p>Go Back to Main Page</p>
