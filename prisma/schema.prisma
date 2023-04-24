@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id   String @id @unique @db.VarChar(500)
+  user_name String @db.VarChar(1000)
+  credits   Int    @default(0) @db.UnsignedMediumInt
+}
+
+model Company {
+  id           Int    @id @default(autoincrement())
+  company_name String @db.VarChar(1000)
+  user_id      String @db.VarChar(500) /// This is used to identify the user which "owns" this company
+}
+
+model Customer {
+  customer_id Int    @id @default(autoincrement())
+  user_id     String @db.VarChar(500)
+  company_id  Int
+  biodata     String @db.VarChar(1000)
+  title       String @db.VarChar(1000)
+}
+
+model Deal {
+  deal_id          Int    @id @default(autoincrement())
+  deal_size        Int    @db.UnsignedMediumInt
+  deal_description String @db.VarChar(10000) /// We can attach a description of up to 10,000 characters. This includes table formatting, markdown etc.
+  customer_id      Int
+}
+
+model Email {
+  email_id           Int    @id @default(autoincrement())
+  email_content      String @db.VarChar(10000) /// Raw email text string
+  prospects_involved String @db.VarChar(1000) // We just join and split a list of prospects and do a reverse call
+}
+
+model Note {
+  note_id   Int    @id @default(autoincrement())
+  note_text String @db.VarChar(10000) // Default limit of 10,000 chars for all otes
+}
+
+model Meeting {
+  meeting_id    Int      @id @default(autoincrement())
+  user_id       String   @db.VarChar(500)
+  summary       String   @db.VarChar(1000)
+  meeting_date  DateTime @db.Timestamp()
+  meeting_notes String   @db.VarChar(1000)
+}
+
+model collateral {
+  collateral_id Int    @id @default(autoincrement())
+  url           String @db.VarChar(1000)
+  summary       String @db.VarChar(1000)
+}

@@ -1,3 +1,6 @@
+import { db } from "@/lib/db";
 export async function GET(request: Request) {
-  return new Response('Hello, Next.js!')
+  const query = await db.selectFrom("Note").selectAll().execute();
+  console.log(query);
+  return new Response("Hello, Next.js!");
 }

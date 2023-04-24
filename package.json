@@ -7,12 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db-codegen": "kysely-codegen --out-file ./src/types/database.ts --url postgresql://postgres:postgres@localhost:54322/postgres  --dialect postgres",
+    "db-codegen": "kysely-codegen --out-file ./src/types/database.ts ",
     "gh-action-codegen": "kysely-codegen --out-file ./src/types/database.ts --url postgresql://postgres:postgres@localhost:54322/postgres  --dialect postgres",
     "generate-env": "echo 'DATABASE_URL=postgres[databasePassword]://user:password@host:port/database_name' > .env.example"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.16.4",
+    "@planetscale/database": "^1.7.0",
+    "@prisma/client": "4.1.0",
     "@types/node": "18.15.11",
     "@types/react": "18.0.34",
     "@types/react-dom": "18.0.11",
@@ -23,9 +25,10 @@
     "eslint-config-next": "13.3.0",
     "kysely": "^0.24.2",
     "kysely-codegen": "^0.10.0",
+    "kysely-planetscale": "^1.3.0",
     "lucide-react": "^0.171.0",
+    "mysql2": "^3.2.3",
     "next": "13.3.0",
-    "pg": "^8.10.0",
     "postcss": "8.4.21",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -33,5 +36,8 @@
     "tailwindcss": "3.3.1",
     "tailwindcss-animate": "^1.0.5",
     "typescript": "5.0.4"
+  },
+  "devDependencies": {
+    "prisma": "4.1.0"
   }
 }
