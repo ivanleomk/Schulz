@@ -29,8 +29,6 @@
     "lucide-react": "^0.171.0",
     "mysql2": "^3.2.3",
     "next": "13.3.0",
-    "pg": "^8.10.0",
-    "pg-native": "^3.0.1",
     "postcss": "8.4.21",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -40,7 +38,6 @@
     "typescript": "5.0.4"
   },
   "devDependencies": {
-    "@types/pg": "^8.6.6",
     "prisma": "4.1.0"
   }
 }
