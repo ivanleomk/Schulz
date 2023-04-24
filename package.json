@@ -7,12 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "install": "yarn install",
     "db-codegen": "kysely-codegen --out-file ./src/types/database.ts --url postgresql://postgres:postgres@localhost:54322/postgres  --dialect postgres",
     "gh-action-codegen": "kysely-codegen --out-file ./src/types/database.ts --url postgresql://postgres:postgres@localhost:54322/postgres  --dialect postgres",
     "generate-env": "echo 'DATABASE_URL=postgres[databasePassword]://user:password@host:port/database_name' > .env.example"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.16.4",
+    "@prisma/client": "4.1.0",
     "@types/node": "18.15.11",
     "@types/react": "18.0.34",
     "@types/react-dom": "18.0.11",
@@ -36,6 +38,7 @@
     "typescript": "5.0.4"
   },
   "devDependencies": {
-    "@types/pg": "^8.6.6"
+    "@types/pg": "^8.6.6",
+    "prisma": "4.1.0"
   }
 }
