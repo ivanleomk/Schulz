@@ -1,9 +1,9 @@
 import { UserButton } from "@clerk/nextjs";
-import React from "react";
+import React, { Suspense } from "react";
 import UserAuth from "./UserAuth";
 import Link from "next/link";
 
-const LandingPage = async () => {
+const LandingPage = () => {
   return (
     <div className="relative isolate px-6 pt-14 lg:px-8">
       <div className="mx-auto max-w-2xl py-40 sm:py-48 lg:py-20">
@@ -30,8 +30,6 @@ const LandingPage = async () => {
                 Join The Waitlist
               </p>
             </Link>
-
-            <UserAuth />
           </div>
         </div>
       </div>
