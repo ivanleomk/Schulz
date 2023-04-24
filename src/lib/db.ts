@@ -1,13 +1,13 @@
-import { Pool } from "pg";
-import { Kysely, PostgresDialect } from "kysely";
 import { DB } from "@/types/database";
+import { Kysely } from "kysely";
+import { PlanetScaleDialect } from "kysely-planetscale";
+
+console.log(process.env.DATABASE_URL);
 
 export const db = new Kysely<DB>({
-  // PostgresDialect requires the Cursor dependency
-  dialect: new PostgresDialect({
-    pool: new Pool({
-      connectionString: process.env.DATABASE_URL!,
-    }),
+  dialect: new PlanetScaleDialect({
+    host: process.env.HOST,
+    username: process.env.USERNAME,
+    password: process.env.PASSWORD,
   }),
-  // MysqlDialect doesn't require any special configuration
 });
