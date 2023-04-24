@@ -22,6 +22,28 @@ const MeetingNotes = () => {
     }
   };
 
+  const generateSummary = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    fetch("/api/open-api/get-summary", {
+      method: "POST",
+      body: JSON.stringify({
+        notes,
+      }),
+    })
+      .then(async (res) => {
+        const body = await res.json();
+        const { summary, date, prospect, company, ...rest } = body;
+        console.log(summary, date, prospect, company);
+        console.log(rest);
+      })
+
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
     <div className="grid grid-cols-4 space-x-3">
       <div className="flex h-full flex-col space-y-4 col-span-3">
@@ -54,7 +76,7 @@ const MeetingNotes = () => {
             value={viewMode}
           />
         </div>
-        <Button>Generate Summary</Button>
+        <Button onClick={(e) => generateSummary(e)}>Generate Summary</Button>
       </div>
     </div>
   );

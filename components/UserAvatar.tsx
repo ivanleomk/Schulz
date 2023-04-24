@@ -8,7 +8,9 @@ const UserAvatar = () => {
 
   return (
     <Avatar>
-      <UserButton afterSignOutUrl={window.location.origin} />
+      <UserButton
+        afterSignOutUrl={window?.location?.origin ?? "schulz.ivanleo.com"}
+      />
     </Avatar>
   );
 };
