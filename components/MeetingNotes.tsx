@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { HoverCard, HoverCardTrigger } from "./ui/hovercard";
@@ -13,6 +13,25 @@ const MeetingNotes = () => {
     "Markdown"
   );
   const [notes, setNotes] = useState("");
+  const [generatingSummary, setGeneratingSummary] = useState(false);
+  const [summaryInfo, setSummaryInfo] = useState<Record<string, string> | null>(
+    null
+  );
+
+  const [existingCustomers, setExistingCustomers] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetch("/api/db/get-all-customers")
+      .then(async (res) => {
+        return res.body;
+      })
+      .then((body) => {
+        const reader = body?.getReader();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   const handleViewModeToggle = (e) => {
     if (viewMode === "Markdown") {
@@ -26,6 +45,7 @@ const MeetingNotes = () => {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
+    setGeneratingSummary(true);
     fetch("/api/open-api/get-summary", {
       method: "POST",
       body: JSON.stringify({
@@ -34,13 +54,16 @@ const MeetingNotes = () => {
     })
       .then(async (res) => {
         const body = await res.json();
-        const { summary, date, prospect, company, ...rest } = body;
-        console.log(summary, date, prospect, company);
-        console.log(rest);
+        const { summary } = body;
+        console.log(body, summary);
+        setSummaryInfo(summary);
       })
 
       .catch((err) => {
         console.log(err);
+      })
+      .finally(() => {
+        setGeneratingSummary(false);
       });
   };
 
@@ -63,6 +86,9 @@ const MeetingNotes = () => {
         )}
       </div>
       <div className="flex flex-col gap-y-4">
+        <Label htmlFor="necessary" className="flex flex-col space-y-1">
+          Step 1 : Generate a summary
+        </Label>
         <div className="flex items-center justify-between space-x-2">
           <Label htmlFor="necessary" className="flex flex-col space-y-1">
             <span>View Source</span>
@@ -76,7 +102,19 @@ const MeetingNotes = () => {
             value={viewMode}
           />
         </div>
-        <Button onClick={(e) => generateSummary(e)}>Generate Summary</Button>
+        <Button
+          onClick={(e) => generateSummary(e)}
+          disabled={generatingSummary}
+        >
+          {!generatingSummary ? "Generate Summary" : "loading..."}
+        </Button>
+        {summaryInfo && (
+          <div>
+            <Label htmlFor="necessary" className="flex flex-col space-y-1">
+              Step 2 : Verify
+            </Label>
+          </div>
+        )}
       </div>
     </div>
   );
