@@ -31,6 +31,7 @@ const LandingPage = () => {
               </p>
               <UserAuth />
             </Link>
+            <UserAuth />
           </div>
         </div>
       </div>

@@ -1,8 +1,4 @@
-import React from "react";
-import { Button } from "../../../components/ui/button";
-import { Avatar, AvatarFallback } from "../../../components/ui/avatar";
 import UserAvatar from "../../../components/UserAvatar";
-import { Tabs, TabsList, TabsTrigger } from "../../../components/ui/tabs";
 import DashboardTabComponent from "../../../components/DashboardTabComponent";
 
 export const metadata = {
