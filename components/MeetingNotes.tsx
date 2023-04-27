@@ -9,6 +9,7 @@ import remarkGfm from "remark-gfm";
 import { Input } from "./ui/input";
 import { toast } from "./ui/use-toast";
 import { ClipLoader } from "react-spinners";
+import { createChunks, generateTranscriptFromChunkPromise } from "@/lib/file";
 
 const MeetingNotes = () => {
   const [viewMode, setViewMode] = useState<"Markdown" | "Beautified">(
@@ -22,34 +23,6 @@ const MeetingNotes = () => {
   const [file, setFile] = React.useState<File | null>(null);
   const [generatingTranscript, setGeneratingTranscript] = useState(false);
 
-  const generateTranscriptFromChunkPromise = async (file: File) => {
-    let formData = new FormData();
-    formData.append("file", file);
-    formData.append("model", "whisper-1");
-    formData.append("response_format", "verbose_json");
-
-    const res = await fetch("/api/open-api/get-transcript", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-      },
-      body: formData,
-    });
-    const response = await res.json();
-    console.log(`${file.name} :  `, response);
-    return response;
-  };
-  function getFileExtension(file) {
-    const fileName = file.name;
-    const extensionIndex = fileName.lastIndexOf(".");
-    if (extensionIndex >= 0) {
-      const extension = fileName.substring(extensionIndex + 1);
-      return extension;
-    } else {
-      return "";
-    }
-  }
-
   const generateTranscript = async (e) => {
     setGeneratingTranscript(true);
     e.preventDefault();
@@ -62,80 +35,25 @@ const MeetingNotes = () => {
       return;
     }
 
-    const chunkSize = 15 * 1024 * 1024; // 25 MB in bytes
-    const overlapSize = 1 * 1024 * 1024; // 5 MB in bytes
+    const formData = new FormData();
+    formData.append("file", file);
 
-    let offset = 0;
-    const promises = [];
-    while (offset < file.size) {
-      const chunkEnd = Math.min(offset + chunkSize, file.size);
-      const chunk = file.slice(offset, chunkEnd);
-      const truncatedFile = new File(
-        [chunk],
-        `chunk_${offset}_${chunkEnd}.${getFileExtension(file)}`,
-        { type: file.type }
-      );
-      console.log(truncatedFile.name);
-      promises.push(generateTranscriptFromChunkPromise(truncatedFile));
-      offset += chunkSize - overlapSize;
-    }
-
-    const res = await Promise.all(promises);
-    setGeneratingTranscript(false);
-
-    // while (offset < file.size) {
-    //   let chunkEnd = offset + chunkSize;
-    //   if (chunkEnd > file.size) {
-    //     chunkEnd = file.size;
-    //     const chunk = file.slice(offset, chunkEnd);
-    //     const truncatedFile = new File(
-    //       [chunk],
-    //       "chunk_" + offset + "_" + chunkEnd,
-    //       { type: file.type }
-    //     );
-    //     promises.push(generateTranscriptFromChunkPromise(truncatedFile));
-    //     offset += chunkSize - overlapSize;
-    //     console.log(offset);
-    //   }
-    // }
-
-    // const res = await Promise.all(promises);
-    // console.log(res);
-
-    // let formData = new FormData();
-    // formData.append("file", file);
-    // formData.append("model", "whisper-1");
-    // formData.append("response_format", "verbose_json");
-
-    // console.log(formData);
-    // console.log(formData.get("model"));
-    // console.log(formData.get("response_format"));
-    // console.log(formData.get("file"));
-
-    // fetch("/api/open-api/get-transcript", {
-    //   method: "POST",
-    //   headers: {
-    //     Accept: "application/json",
-    //   },
-    //   body: formData,
-    // })
-    //   .then(async (res) => {
-    //     console.log(res);
-    //     const body = await res.json();
-    //     setNotes(body["transcript"]);
-    //     toast({
-    //       title: "Success",
-    //       description: "Transcript succesfully generated",
-    //     });
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //     toast({
-    //       title: "Error",
-    //       description: "Unable to generate transcript - error encountered",
-    //       variant: "destructive",
-    //     });
-    //   });
+    fetch("/api/fastapi/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Response:", data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      })
+      .finally(() => {
+        setGeneratingTranscript(false);
+      });
   };
 
   const handleViewModeToggle = (e) => {

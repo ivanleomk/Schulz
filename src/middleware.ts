@@ -2,11 +2,7 @@ import { withClerkMiddleware, getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const publicPaths = [
-  "/",
-  "/api/waitlist*",
-  "/waitlist"
-];
+const publicPaths = ["/", "/api/waitlist*", "/waitlist"];
 
 const isPublic = (path: string) => {
   return publicPaths.find((x) =>
@@ -22,7 +18,6 @@ export default withClerkMiddleware((request: NextRequest) => {
   // if the user is not signed in redirect them to the sign in page.
   const { userId } = getAuth(request);
   if (!userId) {
-
     const signInUrl = new URL("/", request.url);
     signInUrl.searchParams.set("redirect_url", request.url);
     return NextResponse.redirect(signInUrl);
