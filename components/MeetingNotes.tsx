@@ -23,7 +23,9 @@ const MeetingNotes = () => {
   const [file, setFile] = React.useState<File | null>(null);
   const [generatingTranscript, setGeneratingTranscript] = useState(false);
 
-  const generateTranscript = async (e) => {
+  const generateTranscript = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     setGeneratingTranscript(true);
     e.preventDefault();
     if (!file) {
@@ -58,7 +60,7 @@ const MeetingNotes = () => {
       });
   };
 
-  const handleViewModeToggle = (e) => {
+  const handleViewModeToggle = (e: boolean) => {
     if (viewMode === "Markdown") {
       setViewMode("Beautified");
     } else {

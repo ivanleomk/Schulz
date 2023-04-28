@@ -12,7 +12,7 @@ export async function POST(req: Request) {
   const body = new FormData();
   body.append("file", file);
 
-  const res = await fetch(process.env.BACKEND_API_SERVICE, {
+  const res = await fetch(process.env.BACKEND_API_SERVICE as string, {
     method: "POST",
     body: body,
   });
