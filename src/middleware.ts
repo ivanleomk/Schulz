@@ -1,6 +1,6 @@
 import { withClerkMiddleware, getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextRequest } from "next/server";
 
 const publicPaths = ["/", "/api/waitlist*", "/waitlist"];
 
@@ -11,17 +11,19 @@ const isPublic = (path: string) => {
 };
 
 export default withClerkMiddleware((request: NextRequest) => {
-  if (isPublic(request.nextUrl.pathname)) {
-    return NextResponse.next();
-  }
+  // console.log("---Middleware ran");
+  // if (isPublic(request.nextUrl.pathname)) {
+  //   return NextResponse.next();
+  // }
 
-  // if the user is not signed in redirect them to the sign in page.
-  const { userId } = getAuth(request);
-  if (!userId) {
-    const signInUrl = new URL("/", request.url);
-    signInUrl.searchParams.set("redirect_url", request.url);
-    return NextResponse.redirect(signInUrl);
-  }
+  // // if the user is not signed in redirect them to the sign in page.
+  // const { userId } = getAuth(request);
+  // if (!userId) {
+  //   console.log("----User Id was not found");
+  //   const signInUrl = new URL("/", request.url);
+  //   signInUrl.searchParams.set("redirect_url", request.url);
+  //   return NextResponse.redirect(signInUrl);
+  // }
 
   return NextResponse.next();
 });

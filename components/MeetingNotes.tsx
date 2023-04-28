@@ -38,18 +38,20 @@ const MeetingNotes = () => {
     const formData = new FormData();
     formData.append("file", file);
 
-    fetch("/api/fastapi/", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
+    fetch("/api/fastapi/get-transcript", {
+      method: "POST",
+      body: formData,
     })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Response:", data);
+      .then(async (res) => {
+        const response = await res.json();
+        console.log(response);
+        setNotes(response["message"]);
       })
-      .catch((error) => {
-        console.error("Error:", error);
+      .catch((err) => {
+        toast({
+          title: "Error Encountered",
+          description: "Unable to generate transcript. Please try again later.",
+        });
       })
       .finally(() => {
         setGeneratingTranscript(false);

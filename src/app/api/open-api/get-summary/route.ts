@@ -21,7 +21,7 @@ export async function POST(request: Request) {
 
   const prompt = new PromptTemplate({
     template:
-      "Please extract the required information accurately and match the specified field names and descriptions. Only use information explicitly stated and return '' if information cannot be found.\n{format_instructions}\nHere are the meeting notes:\n{summary}",
+      "Please extract the required information accurately and match the specified field names and descriptions. Only use information explicitly stated and return '' if information cannot be found. Please return the value in a valid JSON format. \n{format_instructions}\nHere are the meeting notes:\n{summary}",
     inputVariables: ["summary"],
     partialVariables: { format_instructions: formatInstructions },
   });

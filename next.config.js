@@ -1,17 +1,18 @@
 /** @type {import('next').NextConfig} */
+
+const API_URL = "http://fastapi-image-backend.southeastasia.azurecontainer.io/";
+
 const nextConfig = {
   experimental: {
     appDir: true,
   },
   async rewrites() {
-    return {
-      beforeFiles: [
-        {
-          source: "/api/fastapi/:path*",
-          destination: "http://localhost:8000/:path*",
-        },
-      ],
-    };
+    return [
+      {
+        source: "/fastapi/:path*",
+        destination: `${API_URL}/:path*`,
+      },
+    ];
   },
 };
 
