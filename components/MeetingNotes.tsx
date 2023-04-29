@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { Label } from "./ui/label";
@@ -10,20 +10,37 @@ import { Input } from "./ui/input";
 import { toast } from "./ui/use-toast";
 import { ClipLoader } from "react-spinners";
 import { createChunks, generateTranscriptFromChunkPromise } from "@/lib/file";
+import { useClerk } from "@clerk/nextjs";
+import { capitaliseFirstLetter } from "@/lib/utils";
+import ResultCard from "./ResultCard";
+
+interface SummaryObject {
+  [key: string]: string;
+}
 
 const MeetingNotes = () => {
+  const testSummary = {
+    "date": "April 24th, 2023",
+    "prospect": "John Smith, Sarah Johnson",
+    "company": "Debit Goose",
+    "summary": "SP gave a sales pitch highlighting the benefits of their product and how it could help Debit Goose achieve their business goals. JS and SJ then discussed Debit Goose's current needs and challenges, particularly in the area of customer acquisition. SP suggested several ways in which their product could help Debit Goose overcome these challenges. JS and SJ requested a demo of the product, which SP agreed to provide at a later date.",
+    "actions": "SP to schedule a demo of the product, Debit Goose to provide SP with more information on their current systems and processes"
+  }
+
+  const { user } = useClerk();
   const [viewMode, setViewMode] = useState<"Markdown" | "Beautified">(
     "Markdown"
   );
   const [notes, setNotes] = useState("");
+  const [rePrompt, setRePrompt] = useState("");
   const [generatingSummary, setGeneratingSummary] = useState(false);
-  const [summaryInfo, setSummaryInfo] = useState<Record<string, string> | null>(
-    null
-  );
+  const [summaryInfo, setSummaryInfo] = useState<SummaryObject[]>([testSummary, testSummary, testSummary]);
   const [file, setFile] = React.useState<File | null>(null);
   const [generatingTranscript, setGeneratingTranscript] = useState(false);
+  const userId = useMemo(() => user?.id, [user]);
 
   const generateTranscript = async (e) => {
+    console.log('triggered')
     setGeneratingTranscript(true);
     e.preventDefault();
     if (!file) {
@@ -36,13 +53,18 @@ const MeetingNotes = () => {
     }
 
     const formData = new FormData();
+    console.log(file.name)
+    formData.append("body", file);
     formData.append("file", file);
 
-    fetch("/api/fastapi/", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
+
+    for (const pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
+    }
+
+    fetch("/api/fastapi", {
+      method: "POST",
+      body: formData,
     })
       .then((response) => response.json())
       .then((data) => {
@@ -77,9 +99,10 @@ const MeetingNotes = () => {
     })
       .then(async (res) => {
         const body = await res.json();
-        const { summary } = body;
+        console.log(body)
 
-        setSummaryInfo(summary);
+        setSummaryInfo([...summaryInfo, body]);
+        setGeneratingSummary(false);
       })
 
       .catch((err) => {
@@ -105,6 +128,34 @@ const MeetingNotes = () => {
         ) : (
           <div className="prose-sm list-disc">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{notes}</ReactMarkdown>
+          </div>
+        )}
+        {summaryInfo && summaryInfo.length != 0 && (
+          <div>
+            {/* <div className="flex-1 py-3">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold tracking-tight">Result</h2>
+              </div>
+            </div> */}
+            <ResultCard summary={summaryInfo} />
+            {/* {summaryInfo.map((summary, index) => {
+              return (
+                <div className="col-span-3 rounded-lg bg-gray-50 shadow-sm ring-1 ring-gray-900/5" key={index}>
+                  <dl className="flex flex-wrap">
+                    <div className="flex-auto py-6 px-6">
+                      {Object.entries(summary).map(([key, value]) => {
+                        return (
+                          <div key={key} className="flex-auto py-2">
+                            <dt className="text-sm font-semibold leading-6 text-gray-900">{capitaliseFirstLetter(key)}:</dt>
+                            <dd className="mt-1 text-xs font-semibold leading-6 text-gray-900">{value}</dd>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </dl>
+                </div>
+              );
+            })} */}
           </div>
         )}
       </div>
@@ -183,11 +234,27 @@ const MeetingNotes = () => {
         >
           {!generatingSummary ? "Generate Summary" : "loading..."}
         </Button>
-        {summaryInfo && (
-          <div>
+        {summaryInfo && summaryInfo.length != 0 && (
+          <div className="grid w-full max-w-sm items-center gap-1.5 mb-6">
             <Label htmlFor="necessary" className="flex flex-col space-y-1">
               Step 2 : Verify
             </Label>
+            <Textarea
+              value={rePrompt}
+              onChange={(e) => {
+                setRePrompt(e.target.value);
+              }}
+              placeholder="Write feedback here"
+              className="min-h-[20px] flex-1 p-4 md:min-h-[20px] lg:min-h-[20px]"
+            />
+            <div className="flex flex-row gap-2">
+              <Button className="w-1/2 bg-violet-500 hover:bg-violet-600">
+                Accept
+              </Button>
+              <Button className="w-1/2">
+                Reprompt
+              </Button>
+            </div>
           </div>
         )}
       </div>
