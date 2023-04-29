@@ -13,19 +13,24 @@ export async function POST(req: Request) {
   const url = new URL(baseUrl);
 
   const newJsonBody = JSON.stringify({ parts: uploadedParts });
-  console.log(newJsonBody);
 
   url.pathname = fileId;
   url.searchParams.set("action", "mpu-complete");
   url.searchParams.set("uploadId", uploadId);
+
+  console.log(`
+  body:${newJsonBody}
+  url: ${url.toString()}`);
 
   const res = await fetchPlus(url, {
     method: "POST",
     headers: {
       JWT_KEY: process.env.WORKER_JWT_KEY as string,
     },
-    body: JSON.stringify({ parts: uploadedParts }),
+    body: newJsonBody,
   });
+
+  console.log(res);
 
   try {
     if (!res || res.status !== 200) {

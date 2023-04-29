@@ -14,6 +14,7 @@ const AudioFileUpload = () => {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
+
     if (!file) {
       toast({
         title: "Error Encountered",
@@ -21,52 +22,67 @@ const AudioFileUpload = () => {
       });
       return;
     }
-    const fileId = generateFileName(file);
-    const uploadIdBody = await fetch("/api/workers/get-upload-id", {
-      method: "POST",
-      body: JSON.stringify({
-        fileId,
-      }),
-    });
-
-    const uploadIdRes = await uploadIdBody.json();
-    const uploadId = uploadIdRes["uploadId"];
-
-    const chunks = createChunks(file, 1024 * 1024 * 4, 0);
-
-    const uploadPromises = chunks.map((item, idx) => {
-      const form = new FormData();
-      form.append("file", item);
-      form.append("fileId", fileId);
-      form.append("uploadId", uploadId);
-      form.append("partNumber", (idx + 1).toString());
-
-      return fetch("/api/workers/upload-part", {
+    setUploadingFile(true);
+    try {
+      const fileId = generateFileName(file);
+      const uploadIdBody = await fetch("/api/workers/get-upload-id", {
         method: "POST",
-        body: form,
-      }).then((res) => {
-        return res.json();
+        body: JSON.stringify({
+          fileId,
+        }),
       });
-    });
 
-    const uploadedParts = await Promise.all(uploadPromises);
+      const uploadIdRes = await uploadIdBody.json();
+      const uploadId = uploadIdRes["uploadId"];
 
-    const completeUploadBody = await fetch("/api/workers/complete-upload", {
-      method: "POST",
-      body: JSON.stringify({
-        fileId,
-        uploadId,
-        uploadedParts,
-      }),
-    });
+      const chunks = createChunks(file, 1024 * 1024 * 4, 0);
 
-    const completeUploadRes = await completeUploadBody.json();
+      const uploadPromises = chunks.map((item, idx) => {
+        const form = new FormData();
+        form.append("file", item);
+        form.append("fileId", fileId);
+        form.append("uploadId", uploadId);
+        form.append("partNumber", (idx + 1).toString());
 
-    if (completeUploadRes["status"]) {
+        return fetch("/api/workers/upload-part", {
+          method: "POST",
+          body: form,
+        }).then((res) => {
+          return res.json();
+        });
+      });
+
+      const uploadedParts = await Promise.all(uploadPromises);
+
+      console.log("---Finished uploading All parts---");
+
+      const completeUploadBody = await fetch("/api/workers/complete-upload", {
+        method: "POST",
+        body: JSON.stringify({
+          fileId,
+          uploadId,
+          uploadedParts,
+        }),
+      });
+
+      const completeUploadRes = await completeUploadBody.json();
+
+      console.log(completeUploadRes);
+
+      if (completeUploadRes["status"]) {
+        toast({
+          title: "Success",
+          description: "File uploaded successfully",
+        });
+      }
+    } catch (err) {
+      console.log(err);
       toast({
-        title: "Success",
-        description: "File uploaded successfully",
+        title: "Error Encountered",
+        description: "Unable to upload file. Please try again later",
       });
+    } finally {
+      setUploadingFile(false);
     }
   };
   return (
