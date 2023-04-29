@@ -20,12 +20,14 @@ interface SummaryObject {
 
 const MeetingNotes = () => {
   const testSummary = {
-    "date": "April 24th, 2023",
-    "prospect": "John Smith, Sarah Johnson",
-    "company": "Debit Goose",
-    "summary": "SP gave a sales pitch highlighting the benefits of their product and how it could help Debit Goose achieve their business goals. JS and SJ then discussed Debit Goose's current needs and challenges, particularly in the area of customer acquisition. SP suggested several ways in which their product could help Debit Goose overcome these challenges. JS and SJ requested a demo of the product, which SP agreed to provide at a later date.",
-    "actions": "SP to schedule a demo of the product, Debit Goose to provide SP with more information on their current systems and processes"
-  }
+    date: "April 24th, 2023",
+    prospect: "John Smith, Sarah Johnson",
+    company: "Debit Goose",
+    summary:
+      "SP gave a sales pitch highlighting the benefits of their product and how it could help Debit Goose achieve their business goals. JS and SJ then discussed Debit Goose's current needs and challenges, particularly in the area of customer acquisition. SP suggested several ways in which their product could help Debit Goose overcome these challenges. JS and SJ requested a demo of the product, which SP agreed to provide at a later date.",
+    actions:
+      "SP to schedule a demo of the product, Debit Goose to provide SP with more information on their current systems and processes",
+  };
 
   const { user } = useClerk();
   const [viewMode, setViewMode] = useState<"Markdown" | "Beautified">(
@@ -34,51 +36,16 @@ const MeetingNotes = () => {
   const [notes, setNotes] = useState("");
   const [rePrompt, setRePrompt] = useState("");
   const [generatingSummary, setGeneratingSummary] = useState(false);
-  const [summaryInfo, setSummaryInfo] = useState<SummaryObject[]>([testSummary, testSummary, testSummary]);
+  const [summaryInfo, setSummaryInfo] = useState<SummaryObject[]>([
+    testSummary,
+    testSummary,
+    testSummary,
+  ]);
   const [file, setFile] = React.useState<File | null>(null);
   const [generatingTranscript, setGeneratingTranscript] = useState(false);
   const userId = useMemo(() => user?.id, [user]);
 
-  const generateTranscript = async (e) => {
-    console.log('triggered')
-    setGeneratingTranscript(true);
-    e.preventDefault();
-    if (!file) {
-      setGeneratingTranscript(false);
-      toast({
-        title: "Error Encountered",
-        description: "Please upload a valid file",
-      });
-      return;
-    }
-
-    const formData = new FormData();
-    console.log(file.name)
-    formData.append("body", file);
-    formData.append("file", file);
-
-
-    for (const pair of formData.entries()) {
-      console.log(pair[0], pair[1]);
-    }
-
-    fetch("/api/fastapi", {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Response:", data);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      })
-      .finally(() => {
-        setGeneratingTranscript(false);
-      });
-  };
-
-  const handleViewModeToggle = (e) => {
+  const handleViewModeToggle = (e: boolean) => {
     if (viewMode === "Markdown") {
       setViewMode("Beautified");
     } else {
@@ -99,7 +66,7 @@ const MeetingNotes = () => {
     })
       .then(async (res) => {
         const body = await res.json();
-        console.log(body)
+        console.log(body);
 
         setSummaryInfo([...summaryInfo, body]);
         setGeneratingSummary(false);
@@ -177,7 +144,7 @@ const MeetingNotes = () => {
             value={viewMode}
           />
         </div>
-        {file ? (
+        {/* {file ? (
           <div className="mb-6">
             <Label htmlFor="Audio Transcript">Audio Transcript</Label>
             <p className="mt-1 mb-3 text-sm text-gray-500">{file.name}</p>
@@ -226,7 +193,7 @@ const MeetingNotes = () => {
               Upload an audio transcript and we&apos;ll transcribe it all
             </p>
           </div>
-        )}
+        )} */}
 
         <Button
           onClick={(e) => generateSummary(e)}
@@ -251,9 +218,7 @@ const MeetingNotes = () => {
               <Button className="w-1/2 bg-violet-500 hover:bg-violet-600">
                 Accept
               </Button>
-              <Button className="w-1/2">
-                Reprompt
-              </Button>
+              <Button className="w-1/2">Reprompt</Button>
             </div>
           </div>
         )}

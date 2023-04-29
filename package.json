@@ -7,9 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "update-db": "prisma db push",
     "db-codegen": "kysely-codegen --out-file ./src/types/database.ts ",
-    "gh-action-codegen": "kysely-codegen --out-file ./src/types/database.ts --url postgresql://postgres:postgres@localhost:54322/postgres  --dialect postgres",
-    "generate-env": "echo 'DATABASE_URL=postgres[databasePassword]://user:password@host:port/database_name' > .env.example"
+    "gh-action-codegen": "kysely-codegen --out-file ./src/types/database.ts --url postgresql://postgres:postgres@localhost:54322/postgres  --dialect postgres"
   },
   "dependencies": {
     "@clerk/clerk-js": "^4.38.4",
@@ -53,6 +53,6 @@
     "typescript": "5.0.4"
   },
   "devDependencies": {
-    "prisma": "4.1.0"
+    "prisma": "^4.13.0"
   }
 }
