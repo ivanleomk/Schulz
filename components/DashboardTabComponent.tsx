@@ -1,11 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Textarea } from "./ui/textarea";
-import { Button } from "./ui/button";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hovercard";
-import { Input } from "./ui/input";
 import MeetingNotes from "./MeetingNotes";
+import AudioFileUpload from "./AudioFileUpload";
 
 type Props = {
   values: {
@@ -36,6 +33,9 @@ const DashboardTabComponent = ({ values }: Props) => {
       </TabsList>
       <TabsContent value="Meeting Notes" className="mt-0 border-0 p-0">
         <MeetingNotes />
+      </TabsContent>
+      <TabsContent value="Audio Transcript" className="mt-0 border-0 p-0">
+        <AudioFileUpload />
       </TabsContent>
     </Tabs>
   );

@@ -8,16 +8,12 @@ export const metadata = {
 
 const tabs = [
   {
-    label: "Overview",
-    value: "Overview",
-  },
-  {
     label: "Meeting Notes",
     value: "Meeting Notes",
   },
   {
-    label: "Collaterals",
-    value: "Collateral",
+    label: "Audio Transcript",
+    value: "Audio Transcript",
   },
 ];
 
