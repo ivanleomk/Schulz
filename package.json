@@ -12,6 +12,7 @@
     "generate-env": "echo 'DATABASE_URL=postgres[databasePassword]://user:password@host:port/database_name' > .env.example"
   },
   "dependencies": {
+    "@clerk/clerk-js": "^4.38.4",
     "@clerk/nextjs": "^4.16.4",
     "@planetscale/database": "^1.7.0",
     "@prisma/client": "4.1.0",
@@ -26,6 +27,7 @@
     "@types/node": "18.15.11",
     "@types/react": "18.0.34",
     "@types/react-dom": "18.0.11",
+    "@types/uuid": "^9.0.1",
     "autoprefixer": "10.4.14",
     "class-variance-authority": "^0.5.2",
     "clsx": "^1.2.1",

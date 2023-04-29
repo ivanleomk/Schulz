@@ -3,12 +3,72 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { ClipLoader } from "react-spinners";
+import { createChunks, generateFileName } from "@/lib/file";
+import { toast } from "./ui/use-toast";
 
 const AudioFileUpload = () => {
-  const [File, setFile] = useState<File | null>(null);
+  const [file, setFile] = useState<File | null>(null);
   const [uploadingFile, setUploadingFile] = useState(false);
 
-  const handleUpload = () => {};
+  const handleUpload = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    if (!file) {
+      toast({
+        title: "Error Encountered",
+        description: "Please upload a valid file",
+      });
+      return;
+    }
+    const fileId = generateFileName(file);
+    const uploadIdBody = await fetch("/api/workers/get-upload-id", {
+      method: "POST",
+      body: JSON.stringify({
+        fileId,
+      }),
+    });
+
+    const uploadIdRes = await uploadIdBody.json();
+    const uploadId = uploadIdRes["uploadId"];
+
+    const chunks = createChunks(file, 1024 * 1024 * 4, 0);
+
+    const uploadPromises = chunks.map((item, idx) => {
+      const form = new FormData();
+      form.append("file", item);
+      form.append("fileId", fileId);
+      form.append("uploadId", uploadId);
+      form.append("partNumber", (idx + 1).toString());
+
+      return fetch("/api/workers/upload-part", {
+        method: "POST",
+        body: form,
+      }).then((res) => {
+        return res.json();
+      });
+    });
+
+    const uploadedParts = await Promise.all(uploadPromises);
+
+    const completeUploadBody = await fetch("/api/workers/complete-upload", {
+      method: "POST",
+      body: JSON.stringify({
+        fileId,
+        uploadId,
+        uploadedParts,
+      }),
+    });
+
+    const completeUploadRes = await completeUploadBody.json();
+
+    if (completeUploadRes["status"]) {
+      toast({
+        title: "Success",
+        description: "File uploaded successfully",
+      });
+    }
+  };
   return (
     <div>
       <div className="grid w-full max-w-sm items-center gap-1.5 mb-6">

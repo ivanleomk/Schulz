@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 // Chunks are 15 mb by default
 export const createChunks = (
   file: File,
@@ -33,6 +34,12 @@ export const getFileExtension = (file: File) => {
   } else {
     return "";
   }
+};
+
+export const generateFileName = (file: File) => {
+  const id = uuidv4();
+  const extension = getFileExtension(file);
+  return `${id}.${extension}`;
 };
 
 export const generatePromisesInBatch = async <T>(

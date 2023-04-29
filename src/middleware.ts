@@ -2,12 +2,10 @@ import { withClerkMiddleware, getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const publicPaths = ["/", "/api/waitlist*", "/waitlist"];
+const publicPaths = ["/*"];
 
 const isPublic = (path: string) => {
-  return publicPaths.find((x) =>
-    path.match(new RegExp(`^${x}$`.replace("*$", "($|/)")))
-  );
+  return true;
 };
 
 export default withClerkMiddleware((request: NextRequest) => {
