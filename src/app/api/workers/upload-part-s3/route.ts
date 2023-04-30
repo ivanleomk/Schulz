@@ -26,6 +26,7 @@ export async function POST(req: Request) {
     UploadId: uploadId,
   };
 
+  //@ts-ignore : Works fine
   const comand = new UploadPartCommand(input);
   const response = await s3.send(comand);
 
