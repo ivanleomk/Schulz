@@ -1,9 +1,5 @@
 import { s3 } from "@/lib/s3";
-import {
-  S3,
-  UploadPartCommand,
-  UploadPartCopyCommand,
-} from "@aws-sdk/client-s3";
+import { S3, UploadPartCommand } from "@aws-sdk/client-s3";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -39,3 +35,9 @@ export async function POST(req: Request) {
     ...parsedResponse,
   });
 }
+
+export const config = {
+  api: {
+    responseLimit: "8mb",
+  },
+};
