@@ -15,8 +15,6 @@
     "@aws-sdk/client-s3": "^3.321.1",
     "@aws-sdk/s3-request-presigner": "^3.321.1",
     "@aws-sdk/signature-v4-crt": "^3.310.0",
-    "@clerk/clerk-js": "^4.38.4",
-    "@clerk/nextjs": "^4.16.4",
     "@planetscale/database": "^1.7.0",
     "@prisma/client": "4.1.0",
     "@radix-ui/react-avatar": "^1.0.2",

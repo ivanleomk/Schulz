@@ -1,12 +1,6 @@
-import { currentUser } from "@clerk/nextjs/app-beta";
-import LandingPage from "../../components/LandingPage";
 import Link from "next/link";
-import UserAuth from "../../components/UserAuth";
-import { Suspense } from "react";
 
 const Home = async () => {
-  const user = await currentUser();
-
   return (
     <div className="flex  flex-col items-center justify-center h-screen">
       <div className="mx-auto max-w-2xl ">
@@ -33,13 +27,7 @@ const Home = async () => {
                 Join The Waitlist
               </p>
             </Link>
-            <Suspense fallback={<UserAuth />}>
-              {user ? (
-                <Link href="/dashboard">Go To Dashboard</Link>
-              ) : (
-                <UserAuth />
-              )}
-            </Suspense>
+            <Link href="/dashboard">Go To Dashboard</Link>
           </div>
         </div>
       </div>

@@ -1,6 +1,4 @@
-import { UserButton } from "@clerk/nextjs";
 import React, { Suspense } from "react";
-import UserAuth from "./UserAuth";
 import Link from "next/link";
 
 const LandingPage = () => {
@@ -29,9 +27,7 @@ const LandingPage = () => {
               <p className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                 Join The Waitlist
               </p>
-              <UserAuth />
             </Link>
-            <UserAuth />
           </div>
         </div>
       </div>

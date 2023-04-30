@@ -6,12 +6,6 @@ import { Label } from "./ui/label";
 import { Switch } from "./ui/switch";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Input } from "./ui/input";
-import { toast } from "./ui/use-toast";
-import { ClipLoader } from "react-spinners";
-import { createChunks, generateTranscriptFromChunkPromise } from "@/lib/file";
-import { useClerk } from "@clerk/nextjs";
-import { capitaliseFirstLetter } from "@/lib/utils";
 import ResultCard from "./ResultCard";
 
 interface SummaryObject {
@@ -29,7 +23,6 @@ const MeetingNotes = () => {
       "SP to schedule a demo of the product, Debit Goose to provide SP with more information on their current systems and processes",
   };
 
-  const { user } = useClerk();
   const [viewMode, setViewMode] = useState<"Markdown" | "Beautified">(
     "Markdown"
   );
@@ -43,7 +36,6 @@ const MeetingNotes = () => {
   ]);
   const [file, setFile] = React.useState<File | null>(null);
   const [generatingTranscript, setGeneratingTranscript] = useState(false);
-  const userId = useMemo(() => user?.id, [user]);
 
   const handleViewModeToggle = (e: boolean) => {
     if (viewMode === "Markdown") {
