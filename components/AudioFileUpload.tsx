@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import { ClipLoader } from "react-spinners";
 import { createChunks, generateFileName } from "@/lib/file";
 import { toast } from "./ui/use-toast";
+import { fetchPlus } from "@/lib/fetch";
 
 const AudioFileUpload = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -24,57 +25,114 @@ const AudioFileUpload = () => {
     }
     setUploadingFile(true);
     try {
-      const fileId = generateFileName(file);
-      const uploadIdBody = await fetch("/api/workers/get-upload-id", {
-        method: "POST",
-        body: JSON.stringify({
-          fileId,
-        }),
-      });
+      const fileName = generateFileName(file);
+      const chunks = createChunks(file, 1024 * 1024 * 5);
+      const res = await fetchPlus(
+        "/api/workers/generate-presigned-url",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            Key: fileName,
+            Size: chunks.length,
+          }),
+        },
+        1
+      );
 
-      const uploadIdRes = await uploadIdBody.json();
-      const uploadId = uploadIdRes["uploadId"];
+      const uploadId = res["uploadId"] as string;
 
-      const chunks = createChunks(file, 1024 * 1024 * 4, 0);
+      if (!uploadId) {
+        throw new Error("Upload id not found");
+      }
 
       const uploadPromises = chunks.map((item, idx) => {
-        const form = new FormData();
-        form.append("file", item);
-        form.append("fileId", fileId);
-        form.append("uploadId", uploadId);
-        form.append("partNumber", (idx + 1).toString());
-
-        return fetch("/api/workers/upload-part", {
+        const formData = new FormData();
+        formData.append("file", item);
+        formData.append("uploadId", uploadId);
+        formData.append("partNumber", (idx + 1).toString());
+        formData.append("key", fileName);
+        return fetchPlus("/api/workers/upload-part-s3", {
           method: "POST",
-          body: form,
-        }).then((res) => {
-          return res.json();
+          body: formData,
         });
       });
 
-      const uploadedParts = await Promise.all(uploadPromises);
+      const promises = await Promise.all(uploadPromises);
 
-      console.log("---Finished uploading All parts---");
+      console.log("Succesfully uploaded parts");
+      console.log(promises);
 
-      const completeUploadBody = await fetch("/api/workers/complete-upload", {
-        method: "POST",
-        body: JSON.stringify({
-          fileId,
-          uploadId,
-          uploadedParts,
-        }),
+      const completeUploadRes = await fetchPlus(
+        "/api/workers/complete-multipart-upload",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            uploadId,
+            key: fileName,
+            parts: promises,
+          }),
+        }
+      );
+
+      toast({
+        title: "Success",
+        description: "File uploaded successfully",
       });
 
-      const completeUploadRes = await completeUploadBody.json();
+      // const uploadIdBody = await fetch("/api/workers/get-upload-id", {
+      //   method: "POST",
+      //   body: JSON.stringify({
+      //     fileId,
+      //   }),
+      // });
 
-      console.log(completeUploadRes);
+      // const uploadIdRes = await uploadIdBody.json();
+      // const uploadId = uploadIdRes["uploadId"];
 
-      if (completeUploadRes["status"]) {
-        toast({
-          title: "Success",
-          description: "File uploaded successfully",
-        });
-      }
+      // const chunks = createChunks(file, 1024 * 1024 * 5);
+
+      // console.log(chunks);
+
+      // console.log(`Total chunks: ${chunks.length}`);
+
+      // const uploadPromises = chunks.map((item, idx) => {
+      //   const form = new FormData();
+      //   form.append("file", item);
+      //   form.append("fileId", fileId);
+      //   form.append("uploadId", uploadId);
+      //   form.append("partNumber", (idx + 1).toString());
+
+      //   return fetch("/api/workers/upload-part", {
+      //     method: "POST",
+      //     body: form,
+      //   }).then((res) => {
+      //     return res.json();
+      //   });
+      // });
+
+      // const uploadedParts = await Promise.all(uploadPromises);
+
+      // console.log("Succesfully uploaded all parts");
+
+      // const completeUploadBody = await fetch("/api/workers/complete-upload", {
+      //   method: "POST",
+      //   body: JSON.stringify({
+      //     fileId,
+      //     uploadId,
+      //     uploadedParts,
+      //   }),
+      // });
+
+      // const completeUploadRes = await completeUploadBody.json();
+
+      // console.log(completeUploadRes);
+
+      // if (completeUploadRes["status"]) {
+      //   toast({
+      //     title: "Success",
+      //     description: "File uploaded successfully",
+      //   });
+      // }
     } catch (err) {
       console.log(err);
       toast({

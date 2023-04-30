@@ -2,8 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 // Chunks are 15 mb by default
 export const createChunks = (
   file: File,
-  chunkSize = 15 * 1024 * 1024 /* cSize should be byte 1024*1 = 1KB */,
-  overlapSize = 1 * 1024 * 1024
+  chunkSize = 15 * 1024 * 1024 /* cSize should be byte 1024*1 = 1KB */
 ) => {
   let offset = 0;
   const originalFileExtension = getFileExtension(file);
@@ -20,7 +19,7 @@ export const createChunks = (
       }
     );
     chunks.push(truncatedFile);
-    offset += chunkSize - overlapSize;
+    offset += chunkSize;
   }
   return chunks;
 };

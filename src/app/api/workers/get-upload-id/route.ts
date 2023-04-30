@@ -13,6 +13,9 @@ export async function POST(req: Request) {
 
   url.pathname = fileId;
   url.searchParams.set("action", "mpu-create");
+  console.log(`fileId: ${fileId}`);
+  console.log(`baseUrl: ${baseUrl.toString()}`);
+  console.log(`url: ${url.toString()}`);
 
   const res = await fetch(url, {
     method: "POST",

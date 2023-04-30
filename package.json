@@ -12,6 +12,9 @@
     "gh-action-codegen": "kysely-codegen --out-file ./src/types/database.ts --url postgresql://postgres:postgres@localhost:54322/postgres  --dialect postgres"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.321.1",
+    "@aws-sdk/s3-request-presigner": "^3.321.1",
+    "@aws-sdk/signature-v4-crt": "^3.310.0",
     "@clerk/clerk-js": "^4.38.4",
     "@clerk/nextjs": "^4.16.4",
     "@planetscale/database": "^1.7.0",
@@ -29,6 +32,7 @@
     "@types/react-dom": "18.0.11",
     "@types/uuid": "^9.0.1",
     "autoprefixer": "10.4.14",
+    "aws-crt": "^1.15.15",
     "class-variance-authority": "^0.5.2",
     "clsx": "^1.2.1",
     "eslint": "8.38.0",

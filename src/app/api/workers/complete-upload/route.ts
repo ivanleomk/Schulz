@@ -9,6 +9,12 @@ export async function POST(req: Request) {
   const body = await req.json();
   const { fileId, uploadId, uploadedParts } = body;
 
+  console.log(
+    `fileId: ${fileId},
+    uploadId: ${uploadId},
+    uploadedParts: ${uploadedParts}`
+  );
+
   const baseUrl = process.env.WORKER_URL as string;
   const url = new URL(baseUrl);
 
@@ -29,18 +35,23 @@ export async function POST(req: Request) {
     },
     body: newJsonBody,
   });
-
   console.log(res);
 
   try {
-    if (!res || res.status !== 200) {
+    if (!res) {
       throw new Error("Unable to complete upload");
+    }
+
+    if (res.status !== 200) {
+      console.log("Res Status Text was bad");
+      throw new Error(res.statusText);
     }
 
     return NextResponse.json({ status: 200 });
   } catch (err) {
+    console.log(err);
     return NextResponse.json({
-      message: "Unable to generate uploadId",
+      message: "Failed to upload file",
     });
   }
 }
