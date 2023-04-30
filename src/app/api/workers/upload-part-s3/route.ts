@@ -35,9 +35,3 @@ export async function POST(req: Request) {
     ...parsedResponse,
   });
 }
-
-export const config = {
-  api: {
-    responseLimit: "8mb",
-  },
-};

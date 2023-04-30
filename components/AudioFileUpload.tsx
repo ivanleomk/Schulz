@@ -27,52 +27,54 @@ const AudioFileUpload = () => {
     try {
       const fileName = generateFileName(file);
       const chunks = createChunks(file, 1024 * 1024 * 5);
-      const res = await fetchPlus(
-        "/api/workers/generate-presigned-url",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            Key: fileName,
-            Size: chunks.length,
-          }),
+
+      const uploadIdUrl = `/workers?action=create-multipart-upload&key=${fileName}`;
+
+      const res = await fetch(uploadIdUrl, {
+        method: "POST",
+        headers: {
+          "X-Custom-Auth-Key":
+            "W7PafdzZg67Wku7AHJsRgwOhg19aCyq44uezwB/mifEonsmrTprl3i9bFRBWWwumVCrghBrP1n1niHDRGhKAc7kkCPbD9s06kNluLfDf8RE9tmHVKwkwjlE1k0yNxFCDatrBEkKqjytQSyAXiTT39Ls/clz096UX1t7dSOks7qkzvLIaQR0504YjsVpczldHWt2JtciGdZtntS90HXXpNOZPOCM2ylHd5RFrLohDfFsjwT7LAtZpVS1jpbI8mfJwf/bwVFjL1KCJzP6ZxjPai3TuKdryop3DdUAjxDixu7UbHdvUnb7fXql90nI4GXZdBj9tsac91dSCqUJTQNxPjQ==",
         },
-        1
-      );
-
-      const uploadId = res["uploadId"] as string;
-
-      if (!uploadId) {
-        throw new Error("Upload id not found");
-      }
-
-      const uploadPromises = chunks.map((item, idx) => {
-        const formData = new FormData();
-        formData.append("file", item);
-        formData.append("uploadId", uploadId);
-        formData.append("partNumber", (idx + 1).toString());
-        formData.append("key", fileName);
-        return fetchPlus("/api/workers/upload-part-s3", {
-          method: "POST",
-          body: formData,
-        });
       });
 
-      const promises = await Promise.all(uploadPromises);
+      const uploadId = await res.json();
+      console.log(uploadId);
 
-      console.log("Succesfully uploaded parts");
-      console.log(promises);
+      // const uploadId = res["uploadId"] as string;
 
-      const completeUploadRes = await fetchPlus(
-        "/api/workers/complete-multipart-upload",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            uploadId,
-            key: fileName,
-            parts: promises,
-          }),
-        }
-      );
+      // if (!uploadId) {
+      //   throw new Error("Upload id not found");
+      // }
+
+      // const uploadPromises = chunks.map((item, idx) => {
+      //   const formData = new FormData();
+      //   formData.append("file", item);
+      //   formData.append("uploadId", uploadId);
+      //   formData.append("partNumber", (idx + 1).toString());
+      //   formData.append("key", fileName);
+      //   return fetchPlus("/api/workers/upload-part-s3", {
+      //     method: "POST",
+      //     body: formData,
+      //   });
+      // });
+
+      // const promises = await Promise.all(uploadPromises);
+
+      // console.log("Succesfully uploaded parts");
+      // console.log(promises);
+
+      // const completeUploadRes = await fetchPlus(
+      //   "/api/workers/complete-multipart-upload",
+      //   {
+      //     method: "POST",
+      //     body: JSON.stringify({
+      //       uploadId,
+      //       key: fileName,
+      //       parts: promises,
+      //     }),
+      //   }
+      // );
 
       toast({
         title: "Success",

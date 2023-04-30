@@ -4,14 +4,13 @@ const nextConfig = {
     appDir: true,
   },
   async rewrites() {
-    return {
-      beforeFiles: [
-        {
-          source: "/api/fastapi/:path*",
-          destination: "http://127.0.0.1:8000/:path*",
-        },
-      ],
-    };
+    return [
+      {
+        source: "/workers:slug*",
+        // destination: `http://127.0.0.1:8787/:slug*`,
+        destination: `https://schulz-multipart-file-upload.ivanleomk9297.workers.dev/:slug*`,
+      },
+    ];
   },
 };
 
