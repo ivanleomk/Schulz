@@ -12,10 +12,15 @@ import { ClipLoader } from "react-spinners";
 import { createChunks, generateTranscriptFromChunkPromise } from "@/lib/file";
 import { useClerk } from "@clerk/nextjs";
 import { capitaliseFirstLetter } from "@/lib/utils";
-import ResultCard from "./ResultCard";
+import ResultTimeline from "./ResultTimeline";
 
 interface SummaryObject {
   [key: string]: string;
+}
+
+export interface SummaryObjectMap {
+  summaryObject: SummaryObject;
+  typeFlag: "Edited" | "Generated" | "Reprompted";
 }
 
 const MeetingNotes = () => {
@@ -34,12 +39,13 @@ const MeetingNotes = () => {
   const [notes, setNotes] = useState("");
   const [rePrompt, setRePrompt] = useState("");
   const [generatingSummary, setGeneratingSummary] = useState(false);
-  const [summaryInfo, setSummaryInfo] = useState<SummaryObject[]>([testSummary, testSummary, testSummary]);
+  const [revisingSummary, setRevisingSummary] = useState(false);
+  const [summaryInfo, setSummaryInfo] = useState<SummaryObjectMap[]>([]);
   const [file, setFile] = React.useState<File | null>(null);
   const [generatingTranscript, setGeneratingTranscript] = useState(false);
   const userId = useMemo(() => user?.id, [user]);
 
-  const generateTranscript = async (e) => {
+  const generateTranscript = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     console.log('triggered')
     setGeneratingTranscript(true);
     e.preventDefault();
@@ -57,11 +63,6 @@ const MeetingNotes = () => {
     formData.append("body", file);
     formData.append("file", file);
 
-
-    for (const pair of formData.entries()) {
-      console.log(pair[0], pair[1]);
-    }
-
     fetch("/api/fastapi", {
       method: "POST",
       body: formData,
@@ -78,7 +79,7 @@ const MeetingNotes = () => {
       });
   };
 
-  const handleViewModeToggle = (e) => {
+  const handleViewModeToggle = () => {
     if (viewMode === "Markdown") {
       setViewMode("Beautified");
     } else {
@@ -100,9 +101,36 @@ const MeetingNotes = () => {
       .then(async (res) => {
         const body = await res.json();
         console.log(body)
-
-        setSummaryInfo([...summaryInfo, body]);
+        setSummaryInfo([{ summaryObject: body, typeFlag: "Generated" }, ...summaryInfo]);
         setGeneratingSummary(false);
+      })
+
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setGeneratingTranscript(false);
+      });
+  };
+
+  const reviseSummary = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    setRevisingSummary(true);
+    fetch("/api/open-api/revise-summary", {
+      method: "POST",
+      body: JSON.stringify({
+        notes: notes,
+        previousResponse: summaryInfo[0]["summaryObject"],
+        reprompt: rePrompt,
+      }),
+    })
+      .then(async (res) => {
+        const body = await res.json();
+        console.log(body)
+        setSummaryInfo([{ summaryObject: body, typeFlag: "Reprompted" }, ...summaryInfo]);
+        setRevisingSummary(false);
       })
 
       .catch((err) => {
@@ -130,34 +158,31 @@ const MeetingNotes = () => {
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{notes}</ReactMarkdown>
           </div>
         )}
-        {summaryInfo && summaryInfo.length != 0 && (
-          <div>
-            {/* <div className="flex-1 py-3">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold tracking-tight">Result</h2>
-              </div>
-            </div> */}
-            <ResultCard summary={summaryInfo} />
-            {/* {summaryInfo.map((summary, index) => {
-              return (
-                <div className="col-span-3 rounded-lg bg-gray-50 shadow-sm ring-1 ring-gray-900/5" key={index}>
-                  <dl className="flex flex-wrap">
-                    <div className="flex-auto py-6 px-6">
-                      {Object.entries(summary).map(([key, value]) => {
-                        return (
-                          <div key={key} className="flex-auto py-2">
-                            <dt className="text-sm font-semibold leading-6 text-gray-900">{capitaliseFirstLetter(key)}:</dt>
-                            <dd className="mt-1 text-xs font-semibold leading-6 text-gray-900">{value}</dd>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </dl>
+        <div>
+          {generatingSummary || revisingSummary ?
+            (<div className="relative">
+              {summaryInfo.length >= 1 ? (
+                <span className="absolute left-1 top-1 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
+              ) : null}
+              <div className="relative flex space-x-3">
+                <div className="flex align-middle">
+                  <span
+                    className=
+                    'relative top-1.5 bg-yellow-500 h-2 w-2 rounded-full flex items-center justify-center ring-2 ring-white'
+                  />
                 </div>
-              );
-            })} */}
-          </div>
-        )}
+                <div className="flex flex-col w-full">
+                  <span className="ml-2 text-gray-500 mb-2 text-sm">Generating...</span>
+                </div>
+              </div>
+            </div>)
+            : (<></>)}
+          {summaryInfo && summaryInfo.length != 0 && (
+            <div>
+              <ResultTimeline summary={summaryInfo} modifyState={setSummaryInfo} />
+            </div>
+          )}
+        </div>
       </div>
       <div className="flex flex-col gap-y-4">
         <Label htmlFor="necessary" className="flex flex-col space-y-1">
@@ -173,7 +198,7 @@ const MeetingNotes = () => {
           </Label>
           <Switch
             id="necessary"
-            onCheckedChange={(e) => handleViewModeToggle(e)}
+            onCheckedChange={() => handleViewModeToggle()}
             value={viewMode}
           />
         </div>
@@ -248,11 +273,11 @@ const MeetingNotes = () => {
               className="min-h-[20px] flex-1 p-4 md:min-h-[20px] lg:min-h-[20px]"
             />
             <div className="flex flex-row gap-2">
-              <Button className="w-1/2 bg-violet-500 hover:bg-violet-600">
-                Accept
-              </Button>
-              <Button className="w-1/2">
-                Reprompt
+              <Button className="w-full"
+                onClick={(e) => reviseSummary(e)}
+                disabled={revisingSummary}
+              >
+                {!revisingSummary ? "Reprompt" : "loading..."}
               </Button>
             </div>
           </div>
