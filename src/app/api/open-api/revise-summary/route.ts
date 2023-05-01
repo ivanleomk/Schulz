@@ -35,7 +35,7 @@ export async function POST(request: Request) {
   const input = await prompt.format({
     summary: notes,
     reprompt: reprompt,
-    previous_response: previousResponse,
+    previous_response: JSON.stringify(previousResponse),
   })
   const response = await model.call(input)
   const summary = await parser.parse(response)

@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { Label } from "./ui/label";
@@ -13,6 +13,7 @@ import { createChunks, generateTranscriptFromChunkPromise } from "@/lib/file";
 import { useClerk } from "@clerk/nextjs";
 import { capitaliseFirstLetter } from "@/lib/utils";
 import ResultTimeline from "./ResultTimeline";
+import { useSummaryInfoContext } from "./context/SummaryInfoContext";
 
 interface SummaryObject {
   [key: string]: string;
@@ -32,18 +33,33 @@ const MeetingNotes = () => {
     "actions": "SP to schedule a demo of the product, Debit Goose to provide SP with more information on their current systems and processes"
   }
 
+  const {
+    savedSummaryInfo,
+    setSavedSummaryInfo,
+    savedNotes,
+    setSavedNotes
+  } = useSummaryInfoContext();
+
   const { user } = useClerk();
   const [viewMode, setViewMode] = useState<"Markdown" | "Beautified">(
     "Markdown"
   );
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState(savedNotes.current);
   const [rePrompt, setRePrompt] = useState("");
   const [generatingSummary, setGeneratingSummary] = useState(false);
   const [revisingSummary, setRevisingSummary] = useState(false);
-  const [summaryInfo, setSummaryInfo] = useState<SummaryObjectMap[]>([]);
+  const [summaryInfo, setSummaryInfo] = useState<SummaryObjectMap[]>(savedSummaryInfo.current);
   const [file, setFile] = React.useState<File | null>(null);
   const [generatingTranscript, setGeneratingTranscript] = useState(false);
-  const userId = useMemo(() => user?.id, [user]);
+
+
+  useEffect(() => {
+    setSavedSummaryInfo({ "current": summaryInfo })
+  }, [savedSummaryInfo, setSavedSummaryInfo, summaryInfo]);
+
+  useEffect(() => {
+    setSavedNotes({ "current": notes })
+  }, [savedNotes, setSavedNotes, notes]);
 
   const generateTranscript = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     console.log('triggered')
